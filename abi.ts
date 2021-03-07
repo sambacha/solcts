@@ -1,5 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'semver'.
-var semver = require('semver');
+// @file ABI
+import semver = require('semver');
 
 function update (compilerVersion: any, abi: any) {
   var hasConstructor = false;
