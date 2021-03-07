@@ -1,12 +1,15 @@
+// @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'assert'.
 var assert = require('assert');
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'translate'... Remove this comment to see the full error message
 var translate = require('./translate.js');
 var requireFromString = require('require-from-string');
 var https = require('follow-redirects').https;
 var MemoryStream = require('memorystream');
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'semver'.
 var semver = require('semver');
 
-function setupMethods (soljson) {
-  var version;
+function setupMethods (soljson: any) {
+  var version: any;
   if ('_solidity_version' in soljson) {
     version = soljson.cwrap('solidity_version', 'string', []);
   } else {
@@ -31,7 +34,7 @@ function setupMethods (soljson) {
     };
   }
 
-  var alloc;
+  var alloc: any;
   if ('_solidity_alloc' in soljson) {
     alloc = soljson.cwrap('solidity_alloc', 'number', [ 'number' ]);
   } else {
@@ -39,12 +42,12 @@ function setupMethods (soljson) {
     assert(alloc, 'Expected malloc to be present.');
   }
 
-  var reset;
+  var reset: any;
   if ('_solidity_reset' in soljson) {
     reset = soljson.cwrap('solidity_reset', null, []);
   }
 
-  var copyToCString = function (str, ptr) {
+  var copyToCString = function (str: any, ptr: any) {
     var length = soljson.lengthBytesUTF8(str);
     // This is allocating memory using solc's allocator.
     //
@@ -63,9 +66,9 @@ function setupMethods (soljson) {
   // Take a single `ptr` and returns a `str`.
   var copyFromCString = soljson.UTF8ToString || soljson.Pointer_stringify;
 
-  var wrapCallback = function (callback) {
+  var wrapCallback = function (callback: any) {
     assert(typeof callback === 'function', 'Invalid callback specified.');
-    return function (data, contents, error) {
+    return function (data: any, contents: any, error: any) {
       var result = callback(copyFromCString(data));
       if (typeof result.contents === 'string') {
         copyToCString(result.contents, contents);
@@ -76,9 +79,9 @@ function setupMethods (soljson) {
     };
   };
 
-  var wrapCallbackWithKind = function (callback) {
+  var wrapCallbackWithKind = function (callback: any) {
     assert(typeof callback === 'function', 'Invalid callback specified.');
-    return function (context, kind, data, contents, error) {
+    return function (context: any, kind: any, data: any, contents: any, error: any) {
       // Must be a null pointer.
       assert(context === 0, 'Callback context must be null.');
       var result = callback(copyFromCString(kind), copyFromCString(data));
@@ -92,7 +95,7 @@ function setupMethods (soljson) {
   };
 
   // This calls compile() with args || cb
-  var runWithCallbacks = function (callbacks, compile, args) {
+  var runWithCallbacks = function (callbacks: any, compile: any, args: any) {
     if (callbacks) {
       assert(typeof callbacks === 'object', 'Invalid callback object specified.');
     } else {
@@ -101,7 +104,7 @@ function setupMethods (soljson) {
 
     var readCallback = callbacks.import;
     if (readCallback === undefined) {
-      readCallback = function (data) {
+      readCallback = function (data: any) {
         return {
           error: 'File import callback not supported'
         };
@@ -113,14 +116,14 @@ function setupMethods (soljson) {
       // After 0.6.x multiple kind of callbacks are supported.
       var smtSolverCallback = callbacks.smtSolver;
       if (smtSolverCallback === undefined) {
-        smtSolverCallback = function (data) {
+        smtSolverCallback = function (data: any) {
           return {
             error: 'SMT solver callback not supported'
           };
         };
       }
 
-      singleCallback = function (kind, data) {
+      singleCallback = function (kind: any, data: any) {
         if (kind === 'source') {
           return readCallback(data);
         } else if (kind === 'smt-query') {
@@ -165,37 +168,37 @@ function setupMethods (soljson) {
     return output;
   };
 
-  var compileJSON = null;
+  var compileJSON: any = null;
   if ('_compileJSON' in soljson) {
     // input (text), optimize (bool) -> output (jsontext)
     compileJSON = soljson.cwrap('compileJSON', 'string', ['string', 'number']);
   }
 
-  var compileJSONMulti = null;
+  var compileJSONMulti: any = null;
   if ('_compileJSONMulti' in soljson) {
     // input (jsontext), optimize (bool) -> output (jsontext)
     compileJSONMulti = soljson.cwrap('compileJSONMulti', 'string', ['string', 'number']);
   }
 
-  var compileJSONCallback = null;
+  var compileJSONCallback: any = null;
   if ('_compileJSONCallback' in soljson) {
     // input (jsontext), optimize (bool), callback (ptr) -> output (jsontext)
     var compileInternal = soljson.cwrap('compileJSONCallback', 'string', ['string', 'number', 'number']);
-    compileJSONCallback = function (input, optimize, readCallback) {
+    compileJSONCallback = function (input: any, optimize: any, readCallback: any) {
       return runWithCallbacks(readCallback, compileInternal, [ input, optimize ]);
     };
   }
 
-  var compileStandard = null;
+  var compileStandard: any = null;
   if ('_compileStandard' in soljson) {
     // input (jsontext), callback (ptr) -> output (jsontext)
     var compileStandardInternal = soljson.cwrap('compileStandard', 'string', ['string', 'number']);
-    compileStandard = function (input, readCallback) {
+    compileStandard = function (input: any, readCallback: any) {
       return runWithCallbacks(readCallback, compileStandardInternal, [ input ]);
     };
   }
   if ('_solidity_compile' in soljson) {
-    var solidityCompile;
+    var solidityCompile: any;
     if (isVersion6) {
       // input (jsontext), callback (ptr), callback_context (ptr) -> output (jsontext)
       solidityCompile = soljson.cwrap('solidity_compile', 'string', ['string', 'number', 'number']);
@@ -203,18 +206,18 @@ function setupMethods (soljson) {
       // input (jsontext), callback (ptr) -> output (jsontext)
       solidityCompile = soljson.cwrap('solidity_compile', 'string', ['string', 'number']);
     }
-    compileStandard = function (input, callbacks) {
+    compileStandard = function (input: any, callbacks: any) {
       return runWithCallbacks(callbacks, solidityCompile, [ input ]);
     };
   }
 
   // Expects a Standard JSON I/O but supports old compilers
-  var compileStandardWrapper = function (input, readCallback) {
+  var compileStandardWrapper = function (input: any, readCallback: any) {
     if (compileStandard !== null) {
       return compileStandard(input, readCallback);
     }
 
-    function formatFatalError (message) {
+    function formatFatalError (message: any) {
       return JSON.stringify({
         errors: [
           {
@@ -243,14 +246,15 @@ function setupMethods (soljson) {
       return formatFatalError('No input sources specified.');
     }
 
-    function isOptimizerEnabled (input) {
+    function isOptimizerEnabled (input: any) {
       return input['settings'] && input['settings']['optimizer'] && input['settings']['optimizer']['enabled'];
     }
 
-    function translateSources (input) {
+    function translateSources (input: any) {
       var sources = {};
       for (var source in input['sources']) {
         if (input['sources'][source]['content'] !== null) {
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           sources[source] = input['sources'][source]['content'];
         } else {
           // force failure
@@ -260,13 +264,13 @@ function setupMethods (soljson) {
       return sources;
     }
 
-    function librariesSupplied (input) {
+    function librariesSupplied (input: any) {
       if (input['settings']) {
         return input['settings']['libraries'];
       }
     }
 
-    function translateOutput (output, libraries) {
+    function translateOutput (output: any, libraries: any) {
       try {
         output = JSON.parse(output);
       } catch (e) {
@@ -301,6 +305,7 @@ function setupMethods (soljson) {
       if (Object.keys(sources).length !== 1) {
         return formatFatalError('Multiple sources provided, but compiler only supports single input.');
       }
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       return translateOutput(compileJSON(sources[Object.keys(sources)[0]], isOptimizerEnabled(input)), libraries);
     }
 
@@ -326,10 +331,10 @@ function setupMethods (soljson) {
     compile: compileStandardWrapper,
     // Loads the compiler of the given version from the github repository
     // instead of from the local filesystem.
-    loadRemoteVersion: function (versionString, cb) {
+    loadRemoteVersion: function (versionString: any, cb: any) {
       var mem = new MemoryStream(null, {readable: false});
       var url = 'https://binaries.soliditylang.org/bin/soljson-' + versionString + '.js';
-      https.get(url, function (response) {
+      https.get(url, function (response: any) {
         if (response.statusCode !== 200) {
           cb(new Error('Error retrieving binary: ' + response.statusMessage));
         } else {
@@ -338,7 +343,7 @@ function setupMethods (soljson) {
             cb(null, setupMethods(requireFromString(mem.toString(), 'soljson-' + versionString + '.js')));
           });
         }
-      }).on('error', function (error) {
+      }).on('error', function (error: any) {
         cb(error);
       });
     },

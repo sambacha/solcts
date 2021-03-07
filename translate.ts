@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'linker'.
 var linker = require('./linker.js');
 
 /// Translate old style version numbers to semver.
@@ -9,7 +10,8 @@ var linker = require('./linker.js');
 ///            0.1.2-5c3bfd4b*/.-/clang/int
 ///            0.1.1-6ff4cd6b/RelWithDebInfo-Emscripten/clang/int
 /// New style: 0.4.5+commit.b318366e.Emscripten.clang
-function versionToSemver (version) {
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'versionToS... Remove this comment to see the full error message
+function versionToSemver (version: any) {
   // FIXME: parse more detail, but this is a good start
   var parsed = version.match(/^([0-9]+\.[0-9]+\.[0-9]+)-([0-9a-f]{8})[/*].*$/);
   if (parsed) {
@@ -25,12 +27,14 @@ function versionToSemver (version) {
   return version;
 }
 
-function translateErrors (ret, errors) {
+function translateErrors (ret: any, errors: any) {
   for (var error in errors) {
     var type = 'error';
     var extractType = /^(.*):(\d+):(\d+):(.*):/;
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'RegExpExecArray | null' is not assignable to... Remove this comment to see the full error message
     extractType = extractType.exec(errors[error]);
     if (extractType) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       type = extractType[4].trim();
     } else if (errors[error].indexOf(': Warning:')) {
       type = 'Warning';
@@ -47,7 +51,7 @@ function translateErrors (ret, errors) {
   }
 }
 
-function translateGasEstimates (gasEstimates) {
+function translateGasEstimates (gasEstimates: any) {
   if (gasEstimates === null) {
     return 'infinite';
   }
@@ -58,14 +62,16 @@ function translateGasEstimates (gasEstimates) {
 
   var gasEstimatesTranslated = {};
   for (var func in gasEstimates) {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     gasEstimatesTranslated[func] = translateGasEstimates(gasEstimates[func]);
   }
   return gasEstimatesTranslated;
 }
 
-function translateJsonCompilerOutput (output, libraries) {
+function translateJsonCompilerOutput (output: any, libraries: any) {
   var ret = {};
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   ret['errors'] = [];
   var errors;
   if (output['error']) {
@@ -73,21 +79,26 @@ function translateJsonCompilerOutput (output, libraries) {
   } else {
     errors = output['errors'];
   }
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   translateErrors(ret['errors'], errors);
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   ret['contracts'] = {};
   for (var contract in output['contracts']) {
     // Split name first, can be `contract`, `:contract` or `filename:contract`
     var tmp = contract.match(/^(([^:]*):)?([^:]+)$/);
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     if (tmp.length !== 4) {
       // Force abort
       return null;
     }
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     var fileName = tmp[2];
     if (fileName === undefined) {
       // this is the case of `contract`
       fileName = '';
     }
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     var contractName = tmp[3];
 
     var contractInput = output['contracts'][contract];
@@ -96,15 +107,18 @@ function translateJsonCompilerOutput (output, libraries) {
     var translatedGasEstimates = {};
 
     if (gasEstimates['creation']) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       translatedGasEstimates['creation'] = {
         'codeDepositCost': translateGasEstimates(gasEstimates['creation'][1]),
         'executionCost': translateGasEstimates(gasEstimates['creation'][0])
       };
     }
     if (gasEstimates['internal']) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       translatedGasEstimates['internal'] = translateGasEstimates(gasEstimates['internal']);
     }
     if (gasEstimates['external']) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       translatedGasEstimates['external'] = translateGasEstimates(gasEstimates['external']);
     }
 
@@ -129,21 +143,28 @@ function translateJsonCompilerOutput (output, libraries) {
       }
     };
 
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     if (!ret['contracts'][fileName]) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       ret['contracts'][fileName] = {};
     }
 
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     ret['contracts'][fileName][contractName] = contractOutput;
   }
 
   var sourceMap = {};
   for (var sourceId in output['sourceList']) {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     sourceMap[output['sourceList'][sourceId]] = sourceId;
   }
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   ret['sources'] = {};
   for (var source in output['sources']) {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     ret['sources'][source] = {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       id: sourceMap[source],
       legacyAST: output['sources'][source].AST
     };
@@ -152,7 +173,7 @@ function translateJsonCompilerOutput (output, libraries) {
   return ret;
 }
 
-function escapeString (text) {
+function escapeString (text: any) {
   return text
     .replace(/\n/g, '\\n')
     .replace(/\r/g, '\\r')
@@ -160,12 +181,12 @@ function escapeString (text) {
 }
 
 // 'asm' can be an object or a string
-function formatAssemblyText (asm, prefix, source) {
+function formatAssemblyText (asm: any, prefix: any, source: any) {
   if (typeof asm === 'string' || asm === null || asm === undefined) {
     return prefix + (asm || '') + '\n';
   }
   var text = prefix + '.code\n';
-  asm['.code'].forEach(function (item, i) {
+  asm['.code'].forEach(function (item: any, i: any) {
     var v = item.value === undefined ? '' : item.value;
     var src = '';
     if (source !== undefined && item.begin !== undefined && item.end !== undefined) {
@@ -189,7 +210,7 @@ function formatAssemblyText (asm, prefix, source) {
   return text;
 }
 
-function prettyPrintLegacyAssemblyJSON (assembly, source) {
+function prettyPrintLegacyAssemblyJSON (assembly: any, source: any) {
   return formatAssemblyText(assembly, '', source);
 }
 

@@ -3,17 +3,19 @@
 // This is used to download the correct binary version
 // as part of the prepublish step.
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'pkg'.
 var pkg = require('./package.json');
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'fs'.
 var fs = require('fs');
 var https = require('follow-redirects').https;
 var MemoryStream = require('memorystream');
 var keccak256 = require('js-sha3').keccak256;
 
-function getVersionList (cb) {
+function getVersionList (cb: any) {
   console.log('Retrieving available version list...');
 
   var mem = new MemoryStream(null, { readable: false });
-  https.get('https://solc-bin.ethereum.org/bin/list.json', function (response) {
+  https.get('https://solc-bin.ethereum.org/bin/list.json', function (response: any) {
     if (response.statusCode !== 200) {
       console.log('Error downloading file: ' + response.statusCode);
       process.exit(1);
@@ -25,7 +27,7 @@ function getVersionList (cb) {
   });
 }
 
-function downloadBinary (outputName, version, expectedHash) {
+function downloadBinary (outputName: any, version: any, expectedHash: any) {
   console.log('Downloading version', version);
 
   // Remove if existing
@@ -40,7 +42,7 @@ function downloadBinary (outputName, version, expectedHash) {
   });
 
   var file = fs.createWriteStream(outputName, { encoding: 'binary' });
-  https.get('https://solc-bin.ethereum.org/bin/' + version, function (response) {
+  https.get('https://solc-bin.ethereum.org/bin/' + version, function (response: any) {
     if (response.statusCode !== 200) {
       console.log('Error downloading file: ' + response.statusCode);
       process.exit(1);
@@ -61,11 +63,11 @@ function downloadBinary (outputName, version, expectedHash) {
 
 console.log('Downloading correct solidity binary...');
 
-getVersionList(function (list) {
+getVersionList(function (list: any) {
   list = JSON.parse(list);
   var wanted = pkg.version.match(/^(\d+\.\d+\.\d+)$/)[1];
   var releaseFileName = list.releases[wanted];
-  var expectedFile = list.builds.filter(function (entry) { return entry.path === releaseFileName; })[0];
+  var expectedFile = list.builds.filter(function (entry: any) { return entry.path === releaseFileName; })[0];
   if (!expectedFile) {
     console.log('Version list is invalid or corrupted?');
     process.exit(1);
