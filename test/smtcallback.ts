@@ -10,6 +10,7 @@ const semver = require('semver');
 const solc = require('../index.js');
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'smtchecker... Remove this comment to see the full error message
 const smtchecker = require('../smtchecker.js');
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'smtsolver'... Remove this comment to see the full error message
 const smtsolver = require('../smtsolver.js');
 var preamble = 'pragma solidity >=0.0;\n// SPDX-License-Identifier: GPL-3.0\n';
 var pragmaSMT = 'pragma experimental SMTChecker;\n';
