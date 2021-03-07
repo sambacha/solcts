@@ -1,5 +1,7 @@
 var commandExistsSync = require('command-exists').sync;
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'execSync'.
 var execSync = require('child_process').execSync;
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'fs'.
 var fs = require('fs');
 var tmp = require('tmp');
 
@@ -17,7 +19,7 @@ var potentialSolvers = [
 ];
 var solvers = potentialSolvers.filter(solver => commandExistsSync(solver.name));
 
-function solve (query) {
+function solve (query: any) {
   if (solvers.length === 0) {
     throw new Error('No SMT solver available. Assertion checking will not be performed.');
   }

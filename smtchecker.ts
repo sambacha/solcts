@@ -3,7 +3,7 @@
 // The function runs an SMT solver on each query and adjusts the input for
 // another run.
 // Returns null if no solving is requested.
-function handleSMTQueries (inputJSON, outputJSON, solver) {
+function handleSMTQueries (inputJSON: any, outputJSON: any, solver: any) {
   var auxInputReq = outputJSON.auxiliaryInputRequested;
   if (!auxInputReq) {
     return null;
@@ -16,6 +16,7 @@ function handleSMTQueries (inputJSON, outputJSON, solver) {
 
   var responses = {};
   for (var query in queries) {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     responses[query] = solver(queries[query]);
   }
 
@@ -25,8 +26,8 @@ function handleSMTQueries (inputJSON, outputJSON, solver) {
   return inputJSON;
 }
 
-function smtCallback (solver) {
-  return function (query) {
+function smtCallback (solver: any) {
+  return function (query: any) {
     try {
       var result = solver(query);
       return { contents: result };

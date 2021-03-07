@@ -1,24 +1,26 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'tape'.
 const tape = require('tape');
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'linker'.
 const linker = require('../linker.js');
 
-tape('Link references', function (t) {
-  t.test('Empty bytecode', function (st) {
+tape('Link references', function (t: any) {
+  t.test('Empty bytecode', function (st: any) {
     st.deepEqual(linker.findLinkReferences(''), {});
     st.end();
   });
 
-  t.test('No references', function (st) {
+  t.test('No references', function (st: any) {
     st.deepEqual(linker.findLinkReferences('6060604052341561000f57600080fd'), {});
     st.end();
   });
 
-  t.test('One reference', function (st) {
+  t.test('One reference', function (st: any) {
     var bytecode = '6060604052341561000f57600080fd5b60f48061001d6000396000f300606060405260043610603e5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166326121ff081146043575b600080fd5b3415604d57600080fd5b60536055565b005b73__lib2.sol:L____________________________6326121ff06040518163ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040160006040518083038186803b151560b357600080fd5b6102c65a03f4151560c357600080fd5b5050505600a165627a7a723058207979b30bd4a07c77b02774a511f2a1dd04d7e5d65b5c2735b5fc96ad61d43ae40029';
     st.deepEqual(linker.findLinkReferences(bytecode), { 'lib2.sol:L': [ { start: 116, length: 20 } ] });
     st.end();
   });
 
-  t.test('Two references', function (st) {
+  t.test('Two references', function (st: any) {
     var bytecode = '6060604052341561000f57600080fd5b61011a8061001e6000396000f30060606040526004361060255763ffffffff60e060020a60003504166326121ff08114602a575b600080fd5b3415603457600080fd5b603a603c565b005b73__lib2.sol:L____________________________6326121ff06040518163ffffffff1660e060020a02815260040160006040518083038186803b1515608157600080fd5b6102c65a03f41515609157600080fd5b50505073__linkref.sol:Lx________________________6326121ff06040518163ffffffff1660e060020a02815260040160006040518083038186803b151560d957600080fd5b6102c65a03f4151560e957600080fd5b5050505600a165627a7a72305820fdfb8eab411d7bc86d7dfbb0c985c30bebf1cc105dc5b807291551b3d5aa29d90029';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -27,7 +29,7 @@ tape('Link references', function (t) {
     st.end();
   });
 
-  t.test('Library name with leading underscore', function (st) {
+  t.test('Library name with leading underscore', function (st: any) {
     var bytecode = '6060604052341561000f57600080fd5b60f48061001d6000396000f300606060405260043610603e5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166326121ff081146043575b600080fd5b3415604d57600080fd5b60536055565b005b73__lib2.sol:_L___________________________6326121ff06040518163ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040160006040518083038186803b151560b357600080fd5b6102c65a03f4151560c357600080fd5b5050505600a165627a7a7230582089689827bbf0b7dc385ffcb4b1deb9f9e61741f61f89b4af65f806ff2b0d73470029';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -36,7 +38,7 @@ tape('Link references', function (t) {
     st.end();
   });
 
-  t.test('Library name with leading underscore (without fqdn)', function (st) {
+  t.test('Library name with leading underscore (without fqdn)', function (st: any) {
     var bytecode = '6060604052341561000f57600080fd5b60f48061001d6000396000f300606060405260043610603e5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166326121ff081146043575b600080fd5b3415604d57600080fd5b60536055565b005b73___L____________________________________6326121ff06040518163ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040160006040518083038186803b151560b357600080fd5b6102c65a03f4151560c357600080fd5b5050505600a165627a7a7230582089689827bbf0b7dc385ffcb4b1deb9f9e61741f61f89b4af65f806ff2b0d73470029';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -45,7 +47,7 @@ tape('Link references', function (t) {
     st.end();
   });
 
-  t.test('Library name with underscore in the name', function (st) {
+  t.test('Library name with underscore in the name', function (st: any) {
     var bytecode = '6060604052341561000f57600080fd5b60f48061001d6000396000f300606060405260043610603e5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166326121ff081146043575b600080fd5b3415604d57600080fd5b60536055565b005b73__lib2.sol:L_L__________________________6326121ff06040518163ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040160006040518083038186803b151560b357600080fd5b6102c65a03f4151560c357600080fd5b5050505600a165627a7a723058205cb324a27452cc7f8894a57cb0e3ddce2dce0c423e4fc993a3dd51287abd49110029';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -55,7 +57,7 @@ tape('Link references', function (t) {
   });
 
   // Note: this is a case the reference finder cannot properly handle as there's no way to tell
-  t.test('Library name with trailing underscore', function (st) {
+  t.test('Library name with trailing underscore', function (st: any) {
     var bytecode = '6060604052341561000f57600080fd5b60f48061001d6000396000f300606060405260043610603e5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166326121ff081146043575b600080fd5b3415604d57600080fd5b60536055565b005b73__lib2.sol:L____________________________6326121ff06040518163ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040160006040518083038186803b151560b357600080fd5b6102c65a03f4151560c357600080fd5b5050505600a165627a7a7230582058e61511a603707222cfa83fd3ae4269f94eb86513cb9042cf0b44877403d85c0029';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -64,7 +66,7 @@ tape('Link references', function (t) {
     st.end();
   });
 
-  t.test('Invalid input (too short)', function (st) {
+  t.test('Invalid input (too short)', function (st: any) {
     var bytecode = '6060604052341561000____66606060606060';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -73,7 +75,7 @@ tape('Link references', function (t) {
     st.end();
   });
 
-  t.test('Invalid input (1 byte short)', function (st) {
+  t.test('Invalid input (1 byte short)', function (st: any) {
     var bytecode = '6060604052341561000__lib2.sol:L___________________________66606060606060';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -82,7 +84,7 @@ tape('Link references', function (t) {
     st.end();
   });
 
-  t.test('Two references with same library name', function (st) {
+  t.test('Two references with same library name', function (st: any) {
     var bytecode = '6060604052341561000f57600080fd5b61011a8061001e6000396000f30060606040526004361060255763ffffffff60e060020a60003504166326121ff08114602a575b600080fd5b3415603457600080fd5b603a603c565b005b73__lib2.sol:L____________________________6326121ff06040518163ffffffff1660e060020a02815260040160006040518083038186803b1515608157600080fd5b6102c65a03f41515609157600080fd5b50505073__lib2.sol:L____________________________6326121ff06040518163ffffffff1660e060020a02815260040160006040518083038186803b151560d957600080fd5b6102c65a03f4151560e957600080fd5b5050505600a165627a7a72305820fdfb8eab411d7bc86d7dfbb0c985c30bebf1cc105dc5b807291551b3d5aa29d90029';
     st.deepEqual(
       linker.findLinkReferences(bytecode),
@@ -92,8 +94,8 @@ tape('Link references', function (t) {
   });
 });
 
-tape('Linking', function (t) {
-  t.test('link properly', function (st) {
+tape('Linking', function (t: any) {
+  t.test('link properly', function (st: any) {
     /*
       'lib.sol': 'library L { function f() public returns (uint) { return 7; } }',
       'cont.sol': 'import "lib.sol"; contract x { function g() public { L.f(); } }'
@@ -104,7 +106,7 @@ tape('Linking', function (t) {
     st.end();
   });
 
-  t.test('link properly with two-level configuration (from standard JSON)', function (st) {
+  t.test('link properly with two-level configuration (from standard JSON)', function (st: any) {
     /*
       'lib.sol': 'library L { function f() public returns (uint) { return 7; } }',
       'cont.sol': 'import "lib.sol"; contract x { function g() public { L.f(); } }'
@@ -115,7 +117,7 @@ tape('Linking', function (t) {
     st.end();
   });
 
-  t.test('linker to fail with missing library', function (st) {
+  t.test('linker to fail with missing library', function (st: any) {
     /*
       'lib.sol': 'library L { function f() public returns (uint) { return 7; } }',
       'cont.sol': 'import "lib.sol"; contract x { function g() public { L.f(); } }'
@@ -126,7 +128,7 @@ tape('Linking', function (t) {
     st.end();
   });
 
-  t.test('linker to fail with invalid address', function (st) {
+  t.test('linker to fail with invalid address', function (st: any) {
     /*
       'lib.sol': 'library L { function f() public returns (uint) { return 7; } }',
       'cont.sol': 'import "lib.sol"; contract x { function g() public { L.f(); } }'
@@ -138,7 +140,7 @@ tape('Linking', function (t) {
     st.end();
   });
 
-  t.test('linker properly with truncated library name', function (st) {
+  t.test('linker properly with truncated library name', function (st: any) {
     /*
       'lib.sol': 'library L1234567890123456789012345678901234567890 { function f() public returns (uint) { return 7; } }',
       'cont.sol': 'import "lib.sol"; contract x { function g() public { L1234567890123456789012345678901234567890.f(); } }'
@@ -149,14 +151,14 @@ tape('Linking', function (t) {
     st.end();
   });
 
-  t.test('hashed placeholder', function (st) {
+  t.test('hashed placeholder', function (st: any) {
     var bytecode = '6060604052341561000__$cb901161e812ceb78cfe30ca65050c4337$__66606060606060';
     bytecode = linker.linkBytecode(bytecode, { 'lib2.sol:L': '0x123456' });
     st.equal(bytecode, '6060604052341561000000000000000000000000000000000000012345666606060606060');
     st.end();
   });
 
-  t.test('link properly when library doesn\'t have colon in name', function (st) {
+  t.test('link properly when library doesn\'t have colon in name', function (st: any) {
     /*
       'lib.sol': 'library L { function f() public returns (uint) { return 7; } }',
       'cont.sol': 'import "lib.sol"; contract x { function g() public { L.f(); } }'
