@@ -1,5 +1,8 @@
+// @file translate
+// @summary 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'linker'.
-var linker = require('./linker.js');
+// var linker = require('./linker.js');
+import * as linker from "./linker";
 
 /// Translate old style version numbers to semver.
 /// Old style: 0.3.6-3fc68da5/Release-Emscripten/clang
@@ -155,16 +158,13 @@ function translateJsonCompilerOutput (output: any, libraries: any) {
 
   var sourceMap = {};
   for (var sourceId in output['sourceList']) {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     sourceMap[output['sourceList'][sourceId]] = sourceId;
   }
 
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-  ret['sources'] = {};
+ 
   for (var source in output['sources']) {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+
     ret['sources'][source] = {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       id: sourceMap[source],
       legacyAST: output['sources'][source].AST
     };
